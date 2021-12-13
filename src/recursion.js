@@ -11,102 +11,93 @@ var factorial = function(n) {
     return null;
   }
   if (n === 1 || n === 0) {
-    return 1;
+    return 1
   } else {
-    n = n * factorial(n-1);
-    return n;
+    return n * factorial(n - 1);
   }
 };
 
 // 2. Compute the sum of an array of integers.
 // sum([1,2,3,4,5,6]); // 21
 var sum = function(array) {
-
-  // var newArr = array.slice();
-  // if (newArr.length < 1) {
-  //   return 0;
-  // }
-  // return newArr.pop() + sum(newArr);
-  var result = 0;
-
-  if (!Array.isArray(array)) {
-    return array;
-  }
-  array.forEach(function(item) {
-    result = result + sum(item);
-  });
-
-  return result;
-
-  // var result = 0;
-  // for (var i = 0; i < array.length; i++) {
-  //   result = result + array[i];
-  // }
-  // return result;
+    var result = 0;
+    if (!Array.isArray(array)) {
+      return array;
+    } else {
+      for (var i = 0; i < array.length; i++) {
+        result += sum(array[i]);
+      }
+    }
+    return result;
 };
 
 // 3. Sum all numbers in an array containing nested arrays.
 // arraySum([1,[2,3],[[4]],5]); // 15
 var arraySum = function(array) {
   var result = 0;
-
   if (!Array.isArray(array)) {
     return array;
+  } else {
+    for (var i = 0; i < array.length; i++) {
+      result += arraySum(array[i]);
+    }
   }
-  array.forEach(function(item) {
-    result = result + arraySum(item);
-  });
-
   return result;
 };
 
 // 4. Check if a number is even.
 var isEven = function(n) {
+  if (n === 0) {
+    return true;
+  }
   if (Math.abs(n) === 1) {
     return false;
   }
-  if (Math.abs(n) === 2) {
-    return true;
+  if (Math.abs(n) > 0) {
+    return isEven(Math.abs(n) - 2);
   }
-
-  return isEven(Math.abs(n) - 2)
-
 };
 
 // 5. Sum all integers below a given integer.
 // sumBelow(10); // 45
 // sumBelow(7); // 21
 var sumBelow = function(n) {
-
-  if (n === 0) {
+  if (n <= 1 && n >= -1) {
     return 0;
   }
-  if (n < 0) {
+  if (n > 1) {
+    if (n === 2) {
+      return 1;
+    }
+    return n - 1 + sumBelow(n - 1);
+  }
+  if (n < -1) {
+    if (n === -2) {
+      return -1;
+    }
     return n + 1 + sumBelow(n + 1);
   }
-  return n - 1 + sumBelow(n - 1);
-
 };
 
 // 6. Get the integers within a range (x, y).
 // range(2,9); // [3,4,5,6,7,8]
 var range = function(x, y) {
+  // result array
   var result = [];
 
-  if (x - 1 >= y && x + 1 <= y) {
-    return [];
+  // if x === y +/- 1 then stop
+  if (x === y - 1 || x === y + 1) {
+    return result;
   }
-
-  if (y > x + 1) {
-    result.push(y - 1);
-    result = range(x, y - 1).concat(result);
-    //range(x, y - 1);
+  if (x < y - 1) {
+    // push x + 1
+    result.push(x + 1);
+    // call range
+    result = result.concat(range(x + 1, y));
   }
-
-  if (y < x - 1) {
-    result.push(y + 1);
-    result = range(x, y + 1).concat(result);
-    //range(x, y - 1);
+  if (x > y + 1) {
+    result.push(x - 1);
+    result = result.concat(range(x - 1, y));
   }
   return result;
 };
@@ -121,6 +112,20 @@ var exponent = function(base, exp) {
     return 1;
   }
   if (exp > 0) {
+    if (exp % 2 === 0) {
+      // I can't optimize for even with using an inner function, what am I missing?
+      var evenExp = function(base, exp) {
+        if (exp === 0) {
+          return 1;
+        }
+        return base * evenExp(base, exp - 2);
+      }
+      var y = evenExp(base, exp)
+      return y * y;
+
+      // var y = base * exponent(base, exp - 2);
+      // return y * y;
+    }
     return base * exponent(base, exp - 1);
   }
   if (exp < 0) {
@@ -136,11 +141,8 @@ var powerOfTwo = function(n) {
   if (n === 1) {
     return true;
   }
-  if (n < 2) {
+  if (n < 1) {
     return false;
-  }
-  if (n / 2 === 1) {
-    return true;
   }
   return powerOfTwo(n / 2);
 
@@ -148,26 +150,28 @@ var powerOfTwo = function(n) {
 
 // 9. Write a function that reverses a string.
 var reverse = function(string) {
-  var reversedString = '';
-  reversedArray = []
-
+  var revArray = [];
   if (string.length === 0) {
-    return reversedString;
+    return '';
   }
-  if (string.length > 0) {
-    reversedArray.unshift(string.slice(-1))
-    var shortString = string.slice(0, string.length - 1);
-    reverse(shortString);
-  }
-  return reversedArray.join('');
+  // start at the last index and it to the array
+  revArray.push(string[string.length - 1]);
+  // remove that last character and pass that back
+  revArray = revArray.concat(reverse(string.slice(0, string.length - 1)));
+  return revArray.join('');
 };
 
 // 10. Write a function that determines if a string is a palindrome.
 var palindrome = function(string) {
+  // remove all whitespaces and make it all uniform lowercase
+  string = string.toLowerCase().replace(/\s+/g, '');
+  // if it's one letter it's a palindrome
   if (string.length < 2) {
     return true;
   }
+  // if the first and last characters are the same
   if (string[0] === string[string.length - 1]) {
+    // remove them and call the function again
     return palindrome(string.slice(1, -1));
   }
   return false;
@@ -252,6 +256,16 @@ var countKeysInObj = function(obj, key) {
 // countValuesInObj(obj, 'r') // 2
 // countValuesInObj(obj, 'e') // 1
 var countValuesInObj = function(obj, value) {
+  var count = 0;
+  for (var key in obj) {
+    if (typeof obj[key] === 'object') {
+      count = count + countValuesInObj(obj[key], value);
+    }
+    if (obj[key] === value) {
+      count++;
+    }
+  }
+  return count;
 };
 
 // 24. Find all keys in an object (and nested objects) by a provided name and rename
