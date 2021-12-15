@@ -111,26 +111,25 @@ var exponent = function(base, exp) {
   if (exp === 0) {
     return 1;
   }
-  if (exp > 0) {
-    if (exp % 2 === 0) {
-      // I can't optimize for even with using an inner function, what am I missing?
-      var evenExp = function(base, exp) {
-        if (exp === 0) {
-          return 1;
-        }
-        return base * evenExp(base, exp - 2);
-      }
-      var y = evenExp(base, exp)
-      return y * y;
-
-      // var y = base * exponent(base, exp - 2);
-      // return y * y;
-    }
-    return base * exponent(base, exp - 1);
-  }
   if (exp < 0) {
-    return (1 / base) * exponent(base, exp + 1);
+     return 1 / exponent(base, -exp);
   }
+
+  if (exp % 2 === 0) {
+    // I can't optimize for even with using an inner function, what am I missing?
+    // var evenExp = function(base, exp) {
+    //   if (exp === 0) {
+    //     return 1;
+    //   }
+    //   return base * evenExp(base, exp - 2);
+    // }
+    // var y = evenExp(base, exp)
+    // return y * y;
+
+    var y = exponent(base, exp / 2);
+    return y * y;
+  }
+    return base * exponent(base, exp - 1);
 };
 
 // 8. Determine if a number is a power of two.
@@ -183,16 +182,88 @@ var palindrome = function(string) {
 // modulo(17,5) // 2
 // modulo(22,6) // 4
 var modulo = function(x, y) {
+
+  if (y === 0) {
+    return NaN;
+  }
+
+  if (x < 0) {
+    var negative = 1;
+    x = 0 - x;
+  }
+  if (y < 0) {
+    y = 0 - y;
+  }
+  var result = x - y;
+  if (result === 0) {
+    return 0;
+  }
+  if (result > 0 && negative === 1) {
+    return modulo(-result, y);
+  }
+  if (result > 0) {
+    return modulo(result, y);
+  }
+  if (result < 0) {
+    if (negative === 1) {
+      return 0 - (result + y);
+    }
+    return result + y;
+  }
 };
 
 // 12. Write a function that multiplies two numbers without using the * operator or
 // Math methods.
 var multiply = function(x, y) {
+  var negative = 0;
+  if (y < 0) {
+    negative++;
+    y = 0 - y;
+  }
+  if (x < 0) {
+    negative++;
+    x = 0 - x;
+  }
+  if (y === 0 || x === 0) {
+    return 0;
+  }
+  if (y > 0) {
+    y = y - 1;
+    var sum = x + multiply(x, y);
+  }
+  if (negative === 1) {
+    return 0 - sum
+  }
+  return sum
 };
 
 // 13. Write a function that divides two numbers without using the / operator or
 // Math methods to arrive at an approximate quotient (ignore decimal endings).
 var divide = function(x, y) {
+  var negative = 0;
+  var count = 0;
+  if (y === 0) {
+    return NaN;
+  }
+  if (x === 0) {
+    return 0;
+  }
+  if (x < 0) {
+    negative++;
+    x = 0 - x;
+  }
+  if (y < 0) {
+    negative++;
+    y = 0 - y;
+  }
+  if (x - y >= 0) {
+    count++
+    count = count + divide(x - y, y);
+  }
+  if (negative === 1) {
+    return 0 - count;
+  }
+  return count;
 };
 
 // 14. Find the greatest common divisor (gcd) of two positive numbers. The GCD of two
@@ -201,6 +272,23 @@ var divide = function(x, y) {
 // http://www.cse.wustl.edu/~kjg/cse131/Notes/Recursion/recursion.html
 // https://www.khanacademy.org/computing/computer-science/cryptography/modarithmetic/a/the-euclidean-algorithm
 var gcd = function(x, y) {
+  if (x < 0 || y < 0) {
+    return null;
+  }
+  if (x === 0) {
+    return y;
+  }
+  if (y === 0) {
+    return x;
+  }
+  if (x > y) {
+    var a = Math.floor(x / y);
+    var b = x % y;
+    return gcd(y, b);
+  }
+  var a = Math.floor(y / x);
+  var b = y % x;
+  return gcd(x, b);
 };
 
 // 15. Write a function that compares each character of two strings and returns true if
