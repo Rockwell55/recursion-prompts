@@ -296,21 +296,57 @@ var gcd = function(x, y) {
 // compareStr('house', 'houses') // false
 // compareStr('tomato', 'tomato') // true
 var compareStr = function(str1, str2) {
+  var result = false;
+  if (str1.length === 0 && str2.length === 0) {
+    return true
+  }
+  if (str1[0] === str2[0]) {
+    result = compareStr(str1.slice(1), str2.slice(1));
+  }
+  return result;
 };
 
 // 16. Write a function that accepts a string and creates an array where each letter
 // occupies an index of the array.
 var createArray = function(str) {
+  // take the first letter and concat it to the array
+  // pass back the the string without the first letter
+  var result = [];
+  if (str.length === 0) {
+    return result;
+  }
+  result.push(str[0]);
+  result = result.concat(createArray(str.slice(1)));
+  return result;
 };
 
 // 17. Reverse the order of an array
 var reverseArr = function(array) {
+  var reverse = [];
+  if (array.length === 0) {
+    return reverse;
+  }
+  // push the last letter to the new array and pop
+  reverse.push(array.pop())
+  // pass back the shorter popped array
+  reverse = reverse.concat(reverseArr(array));
+  return reverse;
 };
 
 // 18. Create a new array with a given value and length.
 // buildList(0,5) // [0,0,0,0,0]
 // buildList(7,3) // [7,7,7]
 var buildList = function(value, length) {
+  var result = [];
+  if (length === 0) {
+    return result;
+  }
+  // push in the value to the new array
+  result.push(value);
+  // concat and reduce length by 1 and pass back to the function
+  result = result.concat(buildList(value, length - 1));
+  // return the new array
+  return result;
 };
 
 // 19. Implement FizzBuzz. Given integer n, return an array of the string representations of 1 to n.
