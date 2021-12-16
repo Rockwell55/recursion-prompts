@@ -344,7 +344,7 @@ var buildList = function(value, length) {
   // push in the value to the new array
   result.push(value);
   // concat and reduce length by 1 and pass back to the function
-  result = result.concat(buildList(value, length - 1));
+  result = buildList(value, length - 1).concat(result);
   // return the new array
   return result;
 };
@@ -355,17 +355,61 @@ var buildList = function(value, length) {
 // For numbers which are multiples of both three and five, output “FizzBuzz” instead of the number.
 // fizzBuzz(5) // ['1','2','Fizz','4','Buzz']
 var fizzBuzz = function(n) {
+  var result = [];
+  if (n === 1) {
+    result.push(n.toString());
+    return result;
+  }
+  if (n % 3 === 0 && n % 5 === 0) {
+    result.push('FizzBuzz');
+  } else if (n % 3 === 0) {
+    result.push('Fizz');
+  } else if (n % 5 === 0) {
+    result.push('Buzz');
+  } else {
+    result.push(n.toString())
+  }
+  result = fizzBuzz(n - 1).concat(result);
+  return result;
 };
 
 // 20. Count the occurrence of a value in a list.
 // countOccurrence([2,7,4,4,1,4], 4) // 3
 // countOccurrence([2,'banana',4,4,1,'banana'], 'banana') // 2
 var countOccurrence = function(array, value) {
+  var count = 0;
+  if (array.length === 0) {
+    return count;
+  }
+  // check item for match
+  if (array.pop() === value) {
+    count++;
+  }
+  // add to counter if it matches
+  count = count + countOccurrence(array, value);
+  // remove item and pass array back to function
+  return count;
 };
 
 // 21. Write a recursive version of map.
 // rMap([1,2,3], timesTwo); // [2,4,6]
 var rMap = function(array, callback) {
+  var result = [];
+  if (array.length === 0) {
+    return result;
+  }
+  result.push(callback(array[0]));
+  array.shift();
+  result = result.concat(rMap(array, callback));
+  return result;
+  // var result = [];
+  // for (var i = 0; i < array.length; i++) {
+  //   if (Array.isArray(array[i])){
+  //     result = result.concat(rMap(array[i], callback));
+  //   }
+  //   result.push(callback(array[i]));
+  // }
+  // return result;
 };
 
 // 22. Write a function that counts the number of times a key occurs in an object.
@@ -373,6 +417,16 @@ var rMap = function(array, callback) {
 // countKeysInObj(obj, 'r') // 1
 // countKeysInObj(obj, 'e') // 2
 var countKeysInObj = function(obj, key) {
+  var count = 0;
+  for (var k in obj) {
+    if (typeof obj[k] === 'object') {
+      count = count + countKeysInObj(obj[k], key);
+    }
+    if (k === key) {
+      count++;
+    }
+  }
+  return count;
 };
 
 // 23. Write a function that counts the number of times a value occurs in an object.
