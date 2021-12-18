@@ -345,6 +345,7 @@ var buildList = function(value, length) {
   result.push(value);
   // concat and reduce length by 1 and pass back to the function
   result = buildList(value, length - 1).concat(result);
+  //result = result.concat(buildList(value, length - 1));
   // return the new array
   return result;
 };
@@ -370,6 +371,7 @@ var fizzBuzz = function(n) {
     result.push(n.toString())
   }
   result = fizzBuzz(n - 1).concat(result);
+
   return result;
 };
 
@@ -399,17 +401,9 @@ var rMap = function(array, callback) {
     return result;
   }
   result.push(callback(array[0]));
-  array.shift();
-  result = result.concat(rMap(array, callback));
+  // slice
+  result = result.concat(rMap(array.slice(1), callback));
   return result;
-  // var result = [];
-  // for (var i = 0; i < array.length; i++) {
-  //   if (Array.isArray(array[i])){
-  //     result = result.concat(rMap(array[i], callback));
-  //   }
-  //   result.push(callback(array[i]));
-  // }
-  // return result;
 };
 
 // 22. Write a function that counts the number of times a key occurs in an object.
@@ -467,6 +461,23 @@ var replaceKeysInObj = function(obj, oldKey, newKey) {
 // fibonacci(5); // [0,1,1,2,3,5]
 // Note: The 0 is not counted.
 var fibonacci = function(n) {
+  var result = [0];
+  if (n <= 0) {
+    return null;
+  }
+  if (n === 1) {
+    return [0, 1];
+  }
+  if (n > 1) {
+    // ultimately equals [0, 1]
+    var recursiveReturn = fibonacci(n - 1);
+    var a = recursiveReturn[recursiveReturn.length - 1];
+    var b = recursiveReturn[recursiveReturn.length - 2];
+    result = a + b;
+    result = fibonacci(n - 1).concat(result);
+  }
+  return result;
+
 };
 
 // 26. Return the Fibonacci number located at index n of the Fibonacci sequence.
@@ -475,17 +486,46 @@ var fibonacci = function(n) {
 // nthFibo(7); // 13
 // nthFibo(3); // 2
 var nthFibo = function(n) {
+  // value = n-1 plus n-2;
+  if (n < 0) {
+    return null;
+  }
+  if (n === 0) {
+    return 0;
+  }
+  if (n <= 2) {
+    return 1;
+  }
+  return nthFibo(n -1) + nthFibo(n -2);
 };
 
 // 27. Given an array of words, return a new array containing each word capitalized.
 // var words = ['i', 'am', 'learning', 'recursion'];
 // capitalizedWords(words); // ['I', 'AM', 'LEARNING', 'RECURSION']
 var capitalizeWords = function(array) {
+  var result = [];
+  if (array.length === 0) {
+    return [];
+  }
+  result.push(array.pop().toUpperCase());
+  result = capitalizeWords(array).concat(result);
+  console.log(result);
+  return result
 };
 
 // 28. Given an array of strings, capitalize the first letter of each index.
 // capitalizeFirst(['car','poop','banana']); // ['Car','Poop','Banana']
 var capitalizeFirst = function(array) {
+  // capitalize with charAt(0) for each element
+  if (array.length === 0) {
+    return [];
+  }
+  var result = [];
+  var word = array.pop();
+  word = word.charAt(0).toUpperCase() + word.slice(1);
+  result.push(word);
+  result = capitalizeFirst(array).concat(result);
+  return result;
 };
 
 // 29. Return the sum of all even numbers in an object containing nested objects.
@@ -498,11 +538,26 @@ var capitalizeFirst = function(array) {
 // };
 // nestedEvenSum(obj1); // 10
 var nestedEvenSum = function(obj) {
+  var sum = 0;
+  // go through the object recursively if the value of a key is type object
+  for (var key in obj) {
+    if (typeof obj[key] === 'object') {
+      sum = sum + nestedEvenSum(obj[key]);
+    }
+    if (obj[key] % 2 === 0) {
+      sum = sum + obj[key];
+    }
+  }
+  return sum;
+  // if the value is even then add it to sum
+  // sum = sum + recursive call.
+  // return sum
 };
 
 // 30. Flatten an array containing nested arrays.
 // flatten([1,[2],[3,[[4]]],5]); // [1,2,3,4,5]
 var flatten = function(array) {
+
 };
 
 // 31. Given a string, return an object containing tallies of each letter.
