@@ -557,12 +557,40 @@ var nestedEvenSum = function(obj) {
 // 30. Flatten an array containing nested arrays.
 // flatten([1,[2],[3,[[4]]],5]); // [1,2,3,4,5]
 var flatten = function(array) {
-
+  var result = [];
+  // for loop and recursion to flatten any arrays
+  for (var i = 0; i < array.length; i++) {
+    if (Array.isArray(array[i])) {
+      flatten(array[i]);
+      //console.log('result in for loop: ' + result);
+    }
+    // add the flatened element to the result
+    result = result.concat(array[i]);
+    //console.log(typeof array[i]);
+    //console.log('after: ' + result);
+  }
+  return result;
 };
 
 // 31. Given a string, return an object containing tallies of each letter.
 // letterTally('potato'); // {p:1, o:2, t:2, a:1}
 var letterTally = function(str, obj) {
+  // add each letter to the object as a key
+  if (obj === undefined) {
+    obj = {};
+  }
+  var newObj = obj;
+  if (str.length === 0) {
+    return newObj;
+  }
+  var letter = str[0];
+  if (newObj[letter] === undefined) {
+    newObj[letter] = 1;
+  } else{
+    newObj[letter]++;
+  }
+  newObj = Object.assign(newObj, letterTally(str.slice(1), newObj));
+  return newObj;
 };
 
 // 32. Eliminate consecutive duplicates in a list. If the list contains repeated
@@ -571,7 +599,18 @@ var letterTally = function(str, obj) {
 // compress([1,2,2,3,4,4,5,5,5]) // [1,2,3,4,5]
 // compress([1,2,2,3,4,4,2,5,5,5,4,4]) // [1,2,3,4,2,5,4]
 var compress = function(list) {
-};
+  var result = [];
+  // iterate through the list
+  for (var i = 0; i < list.length; i++) {
+    // compare one element to the next
+    if (list[i] === list[i + 1]) {
+      // slice the list to remove the next element and call the function again
+      return result.concat(compress(list.slice(i + 1)));
+    }
+    result.push(list[i]);
+  }
+  return result;
+}
 
 // 33. Augment every element in a list with a new value where each element is an array
 // itself.
