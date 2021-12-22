@@ -558,16 +558,12 @@ var nestedEvenSum = function(obj) {
 // flatten([1,[2],[3,[[4]]],5]); // [1,2,3,4,5]
 var flatten = function(array) {
   var result = [];
-  // for loop and recursion to flatten any arrays
   for (var i = 0; i < array.length; i++) {
     if (Array.isArray(array[i])) {
-      flatten(array[i]);
-      //console.log('result in for loop: ' + result);
+      result = result.concat(flatten(array[i]));
+    }else {
+      result = result.concat(array[i]);
     }
-    // add the flatened element to the result
-    result = result.concat(array[i]);
-    //console.log(typeof array[i]);
-    //console.log('after: ' + result);
   }
   return result;
 };
@@ -616,12 +612,31 @@ var compress = function(list) {
 // itself.
 // augmentElements([[],[3],[7]], 5); // [[5],[3,5],[7,5]]
 var augmentElements = function(array, aug) {
+  var result = [];
+  result.push(array[0].concat(aug));
+  if (array.length === 1) {
+    return result;
+  }
+  result = result.concat(augmentElements(array.slice(1), aug));
+  return result;
 };
 
 // 34. Reduce a series of zeroes to a single 0.
 // minimizeZeroes([2,0,0,0,1,4]) // [2,0,1,4]
 // minimizeZeroes([2,0,0,0,1,0,0,4]) // [2,0,1,0,4]
 var minimizeZeroes = function(array) {
+  // make result array
+  var result = [];
+  // if the current element and the next element are 0
+  for (var i = 0; i < array.length; i++) {
+    if (array[i] === 0 && array[i + 1] === 0) {
+      // call the function again with the the array sliced
+      return result.concat(minimizeZeroes(array.slice(i + 1)));
+    }
+    // push an element to result
+    result.push(array[i]);
+  }
+  return result;
 };
 
 // 35. Alternate the numbers in an array between positive and negative regardless of
@@ -629,12 +644,61 @@ var minimizeZeroes = function(array) {
 // alternateSign([2,7,8,3,1,4]) // [2,-7,8,-3,1,-4]
 // alternateSign([-2,-7,8,3,-1,4]) // [2,-7,8,-3,1,-4]
 var alternateSign = function(array) {
+  var result = [];
+  result.push(Math.abs(array[0]));
+  for (var i = 1; i < array.length; i++) {
+    if ((result[i-1] > 0 && array[i] > 0) || (result[i-1] < 0 && array[i] < 0)) {
+      result.push(-array[i]);
+    } else {
+      result.push(array[i]);
+    }
+  }
+  return result;
+  // var result = [];
+  // if (array.length === 1) {
+  //   if (array[0] < 0) {
+  //     return -array[0];
+  //   } else {
+  //     return array[0];
+  //   }
+  // }
+  // // if the previous element is positive make the new one negative
+  // // else make it positive
+  // var lastIndex = array.length - 1;
+  // var secondToLast = array.length - 2;
+  // if ((array[secondToLast] > 0 && array[lastIndex] > 0)
+  //  || (array[secondToLast] < 0 && array[lastIndex] < 0) ) {
+  //   result.push(-array[lastIndex]);
+  // } else {
+  //   result.push(array[lastIndex]);
+  // }
+  // // if altSign is negatvie, the concat positive?
+  // // why won't below work?
+  // //result = alternateSign(array.slice(0, lastIndex)).concat(result);
+  // result = result.concat(alternateSign(array.slice(0, lastIndex)));
+
+  // return result;
 };
 
 // 36. Given a string, return a string with digits converted to their word equivalent.
 // Assume all numbers are single digits (less than 10).
 // numToText("I have 5 dogs and 6 ponies"); // "I have five dogs and six ponies"
 var numToText = function(str) {
+  var result = '';
+  var numbers = {1: 'one', 2: 'two', 3: 'three', 4: 'four', 5: 'five', 6: 'six',
+                 7: 'seven', 8: 'eight', 9: 'nine', 0: 'zero'};
+  if (str.length === 0) {
+    return result;
+  }
+  if (Number(str[0])) {
+    result = result + (numbers[str[0]]);
+  }
+  if (!Number(str[0])) {
+    result = result + str[0];
+  }
+  result = result + numToText(str.slice(1));
+
+  return result;
 };
 
 
